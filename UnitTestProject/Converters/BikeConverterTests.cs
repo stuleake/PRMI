@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using UnitTestDemo.Converters;
 using UnitTestDemo.Dto;
@@ -76,21 +77,8 @@ namespace UnitTestProject.Converters
         public void ToDtoListReturnsListWhenModelsAreNotNullOrEmpty()
         {
             // arrange
-            var id = Guid.NewGuid();
-            var models = new List<Bike>
-            {
-                new Bike { Id = id, Colour = ExpectedColour, Model = ExpectedModel, Name = ExpectedName },
-                new Bike { Id = id, Colour = ExpectedColour, Model = ExpectedModel, Name = ExpectedName },
-                new Bike { Id = id, Colour = ExpectedColour, Model = ExpectedModel, Name = ExpectedName }
-            };
-
-            var expected = new List<BikeDto>
-            {
-                new BikeDto { Colour = models[0].Colour, Model = models[0].Model, Name = models[0].Name },
-                new BikeDto { Colour = models[1].Colour, Model = models[1].Model, Name = models[1].Name },
-                new BikeDto { Colour = models[2].Colour, Model = models[2].Model, Name = models[2].Name },
-            };
-
+            var models = GetExpectedModels(3).ToList();
+            var expected = GetExpectedDtos(models);
             var sut = CreateSut();
 
             // act
@@ -98,6 +86,28 @@ namespace UnitTestProject.Converters
 
             // assert
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        private static IReadOnlyList<Bike> GetExpectedModels(int range)
+        {
+            return ImmutableList.CreateRange(Enumerable.Range(1, range).Select(index => new Bike()
+            {
+                Id = Guid.NewGuid(),
+                Name = $"{ExpectedName}{index}",
+                Colour = $"{ExpectedColour}{index}",
+                Model = $"{ExpectedModel}{index}",
+            }));
+        }
+
+        private static IReadOnlyList<BikeDto> GetExpectedDtos(IReadOnlyList<Bike> models)
+        {
+            return ImmutableList.CreateRange(Enumerable.Range(0, models.Count)
+                .Select(index => GetBikeDto(models[index])));
+        }
+
+        private static BikeDto GetBikeDto(Bike model)
+        {
+            return new BikeDto { Colour = model.Colour, Model = model.Model, Name = model.Name };
         }
 
         private static IBikeConverter CreateSut()

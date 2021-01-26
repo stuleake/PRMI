@@ -8,6 +8,6 @@ namespace UnitTestDemo.Converters
     {
         BikeDto ToDto(Bike bike); 
 
-        IEnumerable<BikeDto> ToDtoList(List<Bike> models);
+        IEnumerable<BikeDto> ToDtoList(IReadOnlyList<Bike> models);
     }
 }

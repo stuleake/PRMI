@@ -12,7 +12,7 @@ namespace UnitTestDemo.Converters
             return bike == null ? new BikeDto() : new BikeDto { Colour = bike.Colour, Model = bike.Model, Name = bike.Name };
         }
 
-        public IEnumerable<BikeDto> ToDtoList(List<Bike> models)
+        public IEnumerable<BikeDto> ToDtoList(IReadOnlyList<Bike> models)
         {
             if (models == null || models.Any() == false)
             {
